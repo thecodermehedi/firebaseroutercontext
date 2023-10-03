@@ -7,7 +7,6 @@ function App() {
           src="./react.svg"
           alt="react-icon"
         />
-        <h1 className="my-5 text-5xl font-bold">FirebaseRouterContext</h1>
       </div>
     </>
   );

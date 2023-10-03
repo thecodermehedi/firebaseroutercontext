@@ -1,6 +1,4 @@
-import {signInWithEmailAndPassword} from "firebase/auth";
-
-import {useState} from "react";
+import {useContext, useState} from "react";
 import {
   FaGithub,
   FaGoogle,
@@ -9,38 +7,42 @@ import {
   FaEye,
   FaEyeSlash,
 } from "react-icons/fa6";
-import {Link} from "react-router-dom";
-import auth from "./../../firebase/firebase.config";
+import {Link, useNavigate} from "react-router-dom";
+import {AuthContext} from "../../context/AuthProvider";
 const Login = () => {
-  const [success, setSuccess] = useState("");
-  const [error, setError] = useState("");
+  const navigate = useNavigate();
+  const {signinUser, signInWithGoogle} = useContext(AuthContext);
   const [showPassword, setShowPassword] = useState(false);
   const handleSignIn = (e) => {
     e.preventDefault();
-    console.log("submitted");
     const email = e.target.email.value;
     const password = e.target.password.value;
-    setSuccess("");
-    setError("");
-    setShowPassword(false);
-    signInWithEmailAndPassword(auth, email, password)
+    signinUser(email, password)
       .then((result) => {
         const user = result.user;
         console.log(user);
-        if (!user.emailVerified) {
-          e.target.email.value = "";
-          e.target.password.value = "";
-          setError("Please verify your email");
-          return;
-        }
-        setSuccess("Logged in successfully");
+        e.target.reset();
+        navigate("/profile");
       })
       .catch((error) => {
         const errorMessage = error.message;
         console.log(errorMessage);
-        setError(errorMessage);
+        return;
       });
-    console.log(email, password);
+  };
+
+  const handleGoogleSignIn = () => {
+    signInWithGoogle()
+      .then((result) => {
+        const user = result.user;
+        console.log(user);
+        navigate("/profile");
+      })
+      .catch((error) => {
+        const errorMessage = error.message;
+        console.log(errorMessage, error);
+        return;
+      });
   };
   return (
     <section className="h-screen bg-gray-900 text-slate-300">
@@ -94,24 +96,7 @@ const Login = () => {
                   />
                 )}
               </div>
-              {success ? (
-                <p className="text-sm text-center text-green-600 visible">
-                  {success}
-                </p>
-              ) : (
-                <p className="text-sm text-center text-green-600 invisible">
-                  {success}
-                </p>
-              )}
-              {error ? (
-                <p className="text-sm text-center text-red-600 visible">
-                  {error}
-                </p>
-              ) : (
-                <p className="text-sm text-center text-red-600 invisible">
-                  {error}
-                </p>
-              )}
+
               <p className="text-center text-blue-500 hover:underline">
                 <Link to="/resetpassword">Forgot password?</Link>
               </p>
@@ -133,7 +118,10 @@ const Login = () => {
               <button className="text-4xl hover:text-blue-600">
                 <FaFacebook className={"w-8 h-8"} />
               </button>
-              <button className="text-4xl hover:text-blue-600">
+              <button
+                onClick={handleGoogleSignIn}
+                className="text-4xl hover:text-blue-600"
+              >
                 <FaGoogle className={"w-8 h-8"} />
               </button>
               <button className="text-4xl hover:text-blue-600">

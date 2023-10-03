@@ -1,79 +1,38 @@
-import {Link} from "react-router-dom";
-import {
-  createUserWithEmailAndPassword,
-  sendEmailVerification,
-  updateProfile,
-} from "firebase/auth";
-import auth from "./../../firebase/firebase.config";
-import {useState} from "react";
+import {Link, useNavigate} from "react-router-dom";
+// import {
+//   createUserWithEmailAndPassword,
+//   sendEmailVerification,
+//   updateProfile,
+// } from "firebase/auth";
+// import auth from "./../../firebase/firebase.config";
+import {useContext, useState} from "react";
+import {AuthContext} from "../../context/AuthProvider";
 import {FaEye, FaEyeSlash} from "react-icons/fa6";
 const Signup = () => {
-  const [success, setSuccess] = useState("");
-  const [error, setError] = useState("");
+  const {createUser} = useContext(AuthContext);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const navigate = useNavigate();
+
   const handleRegister = (e) => {
     e.preventDefault();
     console.log("submitted");
-    const name = e.target.name.value;
+    // const name = e.target.name.value;
     const email = e.target.email.value;
     const password = e.target.password.value;
-    const confirmPassword = e.target.confirmPassword.value;
-    const terms = e.target.terms.checked;
-    setSuccess("");
-    setError("");
-    setShowPassword(false);
-    setShowConfirmPassword(false);
-    if (name.length < 3) {
-      setError("Name must be at least 3 characters");
-      return;
-    }
-    if (password.length < 6) {
-      setError("Password should be at least 6 characters or more");
-      return;
-    }
-
-    if (!/[A-Z]/.test(password)) {
-      setError("Password should contain at least one capital letter");
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
-
-    if (!terms) {
-      setError("You must accept terms and conditions");
-      return;
-    }
-    console.log(name, email, password, confirmPassword, terms);
-    e.target.name.value = "";
-    e.target.email.value = "";
-    e.target.password.value = "";
-    e.target.confirmPassword.value = "";
-    createUserWithEmailAndPassword(auth, email, password)
+    // const confirmPassword = e.target.confirmPassword.value;
+    // const terms = e.target.terms.checked;
+    createUser(email, password)
       .then((result) => {
         const user = result.user;
-        updateProfile(user, {displayName: name})
-          .then(() => {
-            console.log("Updated profile");
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-        sendEmailVerification(user)
-          .then(() => {
-            setSuccess("Please verify your email");
-            console.log(user);
-          })
-          .catch((error) => {
-            alert(error);
-          });
+        console.log(user);
+        e.target.reset();
+        navigate("/login");
       })
       .catch((error) => {
-        console.log(error);
-        setError(error.message);
+        const errorMessage = error.message;
+        console.log(errorMessage);
+        return;
       });
   };
   return (
@@ -169,7 +128,7 @@ const Signup = () => {
                   <Link to="/terms">Terms and Conditions</Link>.
                 </label>
               </div>
-              {success ? (
+              {/* {success ? (
                 <p className="text-sm text-center text-green-600 visible">
                   {success}
                 </p>
@@ -186,7 +145,7 @@ const Signup = () => {
                 <p className="text-sm text-center text-red-600 invisible">
                   {error}
                 </p>
-              )}
+              )} */}
               <button
                 type="submit"
                 className="btn bg-blue-500 hover:bg-blue-600 transition-all duration-300 cursor-pointer text-white rounded-2xl border-none focus:outline-none text-xl"

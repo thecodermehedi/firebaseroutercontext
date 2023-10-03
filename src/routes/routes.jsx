@@ -5,6 +5,9 @@ import Login from "./../pages/Login/LoginPage";
 import ErrorPage from "./../pages/Error/ErrorPage";
 import Signup from "../pages/Signup/SignupPage";
 import ResetPage from "../pages/Reset/ResetPage";
+import OrderList from "./../components/Orders/OrderList";
+import PrivateRoute from "./PrivateRoute";
+import Profile from "../pages/Profile/Profile";
 
 const routes = createBrowserRouter([
   {
@@ -27,6 +30,22 @@ const routes = createBrowserRouter([
       {
         path: "/resetpassword",
         element: <ResetPage />,
+      },
+      {
+        path: "/orders",
+        element: (
+          <PrivateRoute>
+            <OrderList />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/profile",
+        element: (
+          <PrivateRoute>
+            <Profile />
+          </PrivateRoute>
+        ),
       },
     ],
   },
